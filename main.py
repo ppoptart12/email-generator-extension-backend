@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from OpenAI_script import extensionEmailGenerator
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
@@ -10,19 +12,28 @@ from fastapi.openapi.docs import (
 )
 
 
-class RequestSchema(BaseModel):
-    user_prompt: str
-
+if os.path.exists(".env"):
+    load_dotenv(".env")
 
 app = FastAPI()
 
 MODEL_NAME = 'GmailCopilot'
 MODEL_VERSION = 'v24.08.01'
 
+chrome_extension_url = f"chrome-extension://{os.environ["EXTENSION_ID"]}"
+
+origins = [
+    chrome_extension_url
+]
+
+
+class RequestSchema(BaseModel):
+    user_prompt: str
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
