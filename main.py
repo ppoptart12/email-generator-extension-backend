@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from OpenAI_script import extensionEmailGenerator
-from pydantic import BaseModel
+from schemas import (email_schema)
 from dotenv import load_dotenv
 import os
 from fastapi.openapi.docs import (
@@ -25,10 +25,6 @@ chrome_extension_url = f"chrome-extension://{os.environ["EXTENSION_ID"]}"
 origins = [
     chrome_extension_url
 ]
-
-
-class RequestSchema(BaseModel):
-    user_prompt: str
 
 
 app.add_middleware(
@@ -79,7 +75,7 @@ def route_health(request: Request):
 
 
 @app.post("/generate_email/")
-async def manage_request(user_request: RequestSchema):
+async def manage_request(user_request: email_schema):
     email_agent = extensionEmailGenerator()
 
     email = email_agent.generate_email(message=user_request.user_prompt)
