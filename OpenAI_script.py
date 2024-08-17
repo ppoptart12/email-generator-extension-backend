@@ -1,6 +1,5 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
 from schemas import (email_schema)
 import os
 from dotenv import load_dotenv
@@ -19,12 +18,11 @@ class extensionEmailGenerator():
 
     def generate_email(self, message: str):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a professional email writing assistant. You will be used by high end clients. Write emails based on a user's prompt."),
+            ("system", "You are a professional email writing assistant. Write emails based on a user's prompt."),
             ("user", "{input}")
         ])
 
-        output_parser = PydanticOutputParser(pydantic_object=email_schema)
-        llm_chain = prompt | self.llm | output_parser
+        llm_chain = prompt | self.llm.with_structured_output(schema=email_schema)
 
         generated_email = llm_chain.invoke({"input": message})
 

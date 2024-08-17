@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from OpenAI_script import extensionEmailGenerator
-from schemas import (email_schema)
+from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 from fastapi.openapi.docs import (
@@ -20,11 +20,16 @@ app = FastAPI()
 MODEL_NAME = 'GmailCopilot'
 MODEL_VERSION = 'v24.08.01'
 
-chrome_extension_url = f"chrome-extension://{os.environ["EXTENSION_ID"]}"
+extension_id = os.environ["EXTENSION_ID"]
+chrome_extension_url = f"chrome-extension://{extension_id}"
 
 origins = [
     chrome_extension_url
 ]
+
+
+class RequestSchema(BaseModel):
+    user_prompt: str
 
 
 app.add_middleware(
@@ -75,12 +80,16 @@ def route_health(request: Request):
 
 
 @app.post("/generate_email/")
-async def manage_request(user_request: email_schema):
+async def manage_request(user_request: RequestSchema):
     email_agent = extensionEmailGenerator()
 
-    email = email_agent.generate_email(message=user_request.user_prompt)
+    generated_email = email_agent.generate_email(message=user_request.user_prompt)
+    formatted_email = {
+        "email_body": generated_email.email_body,
+        "email_subject": generated_email.email_subject
+        }
 
-    if email:
-        return JSONResponse(content=email, status_code=200)
+    if formatted_email:
+        return JSONResponse(content=formatted_email, status_code=200)
     else:
         return {"error": "Invalid request parameters"}
