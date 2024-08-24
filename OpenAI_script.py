@@ -16,7 +16,7 @@ class extensionEmailGenerator():
 
     def generate_email(self, message: str, email_length: str, email_tone: str):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", f"You are a professional email writing assistant. Write emails based on a user's prompt. The tone of the email is {email_tone} and the length is {email_length}"),
+            ("system", f"You are a professional email writing assistant. Write emails based on a user's prompt. The tone of the email must be {email_tone} and the relative length of the email must be {email_length}"),
             ("user", "{input}")
         ])
 

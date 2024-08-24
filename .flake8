@@ -2,5 +2,5 @@
 show-source = True
 count = True
 statistics = True
-max-line-length = 200
+max-line-length = 220
 exclude = .github, __pycache__, *.ipynb
