@@ -30,6 +30,8 @@ origins = [
 
 class RequestSchema(BaseModel):
     user_prompt: str
+    email_length: str
+    email_tone: str
 
 
 app.add_middleware(
@@ -83,7 +85,7 @@ def route_health(request: Request):
 async def manage_request(user_request: RequestSchema):
     email_agent = extensionEmailGenerator()
 
-    generated_email = email_agent.generate_email(message=user_request.user_prompt)
+    generated_email = email_agent.generate_email(message=user_request.user_prompt, email_length=user_request.email_length, email_tone=user_request.email_tone)
     formatted_email = {
         "email_body": generated_email.email_body,
         "email_subject": generated_email.email_subject

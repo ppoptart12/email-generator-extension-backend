@@ -14,9 +14,9 @@ class extensionEmailGenerator():
 
         self.llm = ChatOpenAI(api_key=api_key, model="gpt-4o")
 
-    def generate_email(self, message: str):
+    def generate_email(self, message: str, email_length: str, email_tone: str):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a professional email writing assistant. Write emails based on a user's prompt."),
+            ("system", f"You are a professional email writing assistant. Write emails based on a user's prompt. The tone of the email is {email_tone} and the length is {email_length}"),
             ("user", "{input}")
         ])
 
